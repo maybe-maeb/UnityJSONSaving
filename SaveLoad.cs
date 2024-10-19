@@ -59,8 +59,11 @@ public class SaveLoad : MonoBehaviour
             return saveData;
         }
         else{
-            Debug.LogError("Error finding save file!");
-            return null;
+            Debug.LogError("Error finding save file! Creating new empty save file...");
+            SaveData saveData = new SaveData();
+            saveDataToSave = saveData;
+            SaveGameData();
+            return saveData;
         }
         
     }
@@ -80,8 +83,11 @@ public class SaveLoad : MonoBehaviour
             return settingsData;
         }
         else{
-            Debug.LogError("Error finding settings file!");
-            return null;
+            Debug.LogError("Error finding settings file! Creating new empty settings file...");
+            SettingsData settingsData = new SettingsData();
+            settingsDataToSave = settingsData;
+            SaveSettingsData();
+            return settingsData;
         }
     }
 #endregion
