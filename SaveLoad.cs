@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Reflection;
 
 //Notes:
 //The default Unity path is: 
@@ -65,7 +66,29 @@ public class SaveLoad : MonoBehaviour
             SaveGameData();
             return saveData;
         }
-        
+    }
+
+    //Get a variable from the save as a string
+    public string GetSaveString(string variableName){
+        SaveData save = GetSaveData();
+        FieldInfo field = typeof(SaveData).GetField(variableName);
+        string s = field.GetValue(save).ToString();
+        return s;
+    }
+    
+    //Get a variable from the save as an int
+    public int GetSaveInt(string variableName){
+        return int.Parse(GetSaveString(variableName));
+    }
+
+    //Get a variable from the save as a float
+    public float GetSaveFloat(string variableName){
+        return float.Parse(GetSaveString(variableName));
+    }
+
+    //Get a variable from the save as a bool
+    public bool GetSaveBool(string variableName){
+        return bool.Parse(GetSaveString(variableName));
     }
 
     //Can be called from other places to get the current settings data
@@ -90,6 +113,29 @@ public class SaveLoad : MonoBehaviour
             return settingsData;
         }
     }
+
+    //Get a variable from the settings as a string
+    public string GetSettingsString(string variableName){
+        SettingsData settings = GetSettingsData();
+        FieldInfo field = typeof(SettingsData).GetField(variableName);
+        string s = field.GetValue(settings).ToString();
+        return s;
+    }
+
+    //Get a variable from the settings as an int
+    public int GetSettingsInt(string variableName){
+        return int.Parse(GetSettingsString(variableName));
+    }
+
+    //Get a variable from the settings as a float
+    public float GetSettingsFloat(string variableName){
+        return float.Parse(GetSettingsString(variableName));
+    }
+
+    //Get a variable from the settings as a bool
+    public bool GetSettingsBool(string variableName){
+        return bool.Parse(GetSettingsString(variableName));
+    }
 #endregion
 
 #region Writing
@@ -112,6 +158,20 @@ public class SaveLoad : MonoBehaviour
     //Updates the temporary save data. THIS DOES NOT SAVE TO DISK.
     public void UpdateSaveInfo(string variableName, string newValue){
         saveDataToSave.UpdateVariable(variableName, newValue);
+    }
+
+    //Increments an int in the save data. By default it increments by 1.
+    public void IncrementSaveInt(string variableName, int incrementAmount = 1){
+        int val = GetSaveInt(variableName);
+        val += incrementAmount;
+        UpdateSaveInfo(variableName, val.ToString());
+    }
+
+    //Increments a float in the save data. By default it increments by 1.
+    public void IncrementSaveFloat(string variableName, float incrementAmount = 1){
+        float val = GetSaveFloat(variableName);
+        val += incrementAmount;
+        UpdateSaveInfo(variableName, val.ToString());
     }
     #endregion
 
@@ -136,5 +196,23 @@ public class SaveLoad : MonoBehaviour
         settingsDataToSave.UpdateVariable(variableName, newValue);
     }
     #endregion
+#endregion
+
+#region Danger Zone
+    //Deletes the save file.
+    public void DeleteSaveFile(){
+        File.Delete(savePath);
+        Debug.Log("Save file deleted.");
+    }
+
+    //As far as I know, this isn't called from anywhere.
+    //I'm keeping it in case an option like "reset settings" is implemented later
+    //It's also one line long so it's really not going to have any sort of file size impact
+    //Maybe A byte.
+    //...At this point the comment is longer than the function. I'm going to stop now.
+    public void DeleteSettingsFile(){
+        File.Delete(settingsPath);
+        Debug.Log("Settings file deleted.");
+    }
 #endregion
 }
